@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; 
 
- 
-
 import 'nota_model.dart';
 class NovaNota extends StatefulWidget {
   final Nota nota;
@@ -25,7 +23,7 @@ class _NovaNotaState extends State<NovaNota> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Novo Nota/Alterar'),
+        title: new Text('Nota'),
         centerTitle: true,
       ),
       body: Container(
@@ -46,13 +44,13 @@ class _NovaNotaState extends State<NovaNota> {
             RaisedButton(
                 color: Colors.blueGrey,
                 child: (widget.nota.id != null)
-                    ? Text("Alterar")
+                    ? Text("Alterar",
+                        style: TextStyle(
+                            color: Colors.white))
                     : Text(
                         "Novo",
                         style: TextStyle(
-                            fontSize: 30,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w400),
+                            color: Colors.white),
                       ),
                 onPressed: () {
                   if (widget.nota.id != null) {
@@ -72,6 +70,21 @@ class _NovaNotaState extends State<NovaNota> {
                 }
                 )
           ])),
+      floatingActionButton: (widget.nota.id != null)
+                    ? FloatingActionButton(
+        child: Icon(Icons.delete_forever),
+        backgroundColor: Colors.greenAccent[600],
+        onPressed: () => excluiNota(
+                          context,
+                          widget.nota),
+      ) : null,
+    );
+  }
+
+  
+  void excluiNota(BuildContext context, Nota doc) async {
+    await db.collection("notes").doc(doc.id).delete().then((value) => 
+      Navigator.pop(context)
     );
   }
 }

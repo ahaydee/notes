@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:notes/categoria.dart';
 import 'package:notes/nota_model.dart';
-import 'package:notes/categoria_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 
-import 'nova_categoria.dart';
 import 'nova_nota.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -15,28 +12,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Categoria> categorias;
   List<Nota> notas;
   var db = FirebaseFirestore.instance;
-  //StreamSubscription<QuerySnapshot> categoriasinscritos;
   StreamSubscription<QuerySnapshot> notasinscritos;
 
   @override
   void initState() {
     //iniciaservico();
     super.initState();
-    /*categorias = List();
-    categoriasinscritos?.cancel();
-    categoriasinscritos =
-        db.collection("categorias").snapshots().listen((snapshot) {
-      final List<Categoria> categoria = snapshot.docs
-          .map((documentSnapshot) =>
-              Categoria.fromMap(documentSnapshot.data(), documentSnapshot.id))
-          .toList();
-      setState(() {
-        this.categorias = categoria;
-      });
-    });*/
     notas = List();
     notasinscritos?.cancel();
     notasinscritos = db.collection("notes").snapshots().listen((snapshot) {
@@ -53,7 +36,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     notasinscritos?.cancel();
-    //categoriasinscritos?.cancel();
     super.dispose();
   }
 
@@ -81,8 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         return GridView.builder(
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
-                                    childAspectRatio: 1.10,
-                                    crossAxisCount: 2),
+                                    childAspectRatio: 1.10, crossAxisCount: 2),
                             itemCount: documentos.length,
                             itemBuilder: (_, index) {
                               return Card(
@@ -109,20 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       TextStyle(fontSize: 20)),
                                               onTap: () => navegarNotas(
                                                   context, notas[index]),
-                                            ),
-                                            ButtonBar(
-                                                  children: <Widget>[
-                                                    IconButton(
-                                                        icon: const Icon(
-                                                            Icons.delete_forever),
-                                                        onPressed: () {
-                                                          excluiNota(
-                                                              context,
-                                                              documentos[index],
-                                                              index);
-                                                        })
-                                                  ],
-                                                )
+                                            )
                                           ])));
                             });
                     }
@@ -165,39 +133,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   builder: (BuildContext context) => MyHomePage()));
             },
           ),
-          Divider(),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Categorias',
-            ),
-          ),
           ListTile(
-            leading: new Icon(Icons.folder),
-            title: Text("Página Dois"),
+            leading: new Icon(Icons.home),
+            title: Text("Previsão do Tempo"),
             onTap: () {
               Navigator.of(context).pop();
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (BuildContext context) => CategoriaPage()));
-            },
-          ),
-          ListTile(
-            leading: new Icon(Icons.folder),
-            title: Text("Página Três"),
-            onTap: () {
-              Navigator.of(context);
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (BuildContext context) => CategoriaPage()));
-            },
-          ),
-          ListTile(
-            leading: new Icon(Icons.add),
-            title: Text("Adicionar nova categoria"),
-            onTap: () {
-              Navigator.of(context);
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (BuildContext context) =>
-                      NovaCategoria(new Categoria(null, null))));
+                  builder: (BuildContext context) => MyHomePage()));
             },
           ),
         ],
@@ -207,16 +149,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Stream<QuerySnapshot> getListaNotas() {
     return FirebaseFirestore.instance.collection("notes").snapshots();
-  }
-
-  void excluiNota(
-      BuildContext context, DocumentSnapshot doc, int posicao) async {
-    //iniciaservico();
-    db.collection("notes").doc(doc.id).delete();
-    setState(() {
-      //iniciaservico();
-      notas.removeAt(posicao);
-    });
   }
 
   void navegarNotas(BuildContext context, Nota nota) async {
